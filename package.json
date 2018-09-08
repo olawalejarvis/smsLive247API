@@ -1,0 +1,17 @@
+{
+  "name": "smslive24api",
+  "version": "1.0.0",
+  "description": "sms live 24 api npm library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "sms",
+    "api",
+    "smslive24"
+  ],
+  "author": "Olawale Aladeusi (olawalejarvis@gmail.com)",
+  "license": "ISC",
+  "dependencies": {}
+}
