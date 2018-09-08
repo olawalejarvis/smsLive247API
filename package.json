@@ -1,17 +1,21 @@
 {
   "name": "smslive24api",
   "version": "1.0.0",
-  "description": "sms live 24 api npm library",
+  "description": "A node interface for SMSLive247 from www.smslive247.com",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": ""
   },
   "keywords": [
     "sms",
     "api",
-    "smslive24"
+    "smslive247"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/olawalejarvis/smsLive247API"
+  },
   "author": "Olawale Aladeusi (olawalejarvis@gmail.com)",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {}
 }

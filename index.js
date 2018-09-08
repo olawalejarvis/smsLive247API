@@ -9,8 +9,7 @@
  */
 
 const http = require('http');
-
-class SMSLIVE24API {
+class SMSLIVE247API {
   /**
    * Contructor - this takes in the user's sub account username and password
    * NOTE: This is not your original account username and password
@@ -23,7 +22,6 @@ class SMSLIVE24API {
     this.ownerEmail = ownerEmail
     this.subAcctUserName = subAcctUserName
     this.subAcctPassword = subAcctPassword
-    this.sessionId = ''
   }
 
   /**
@@ -31,26 +29,8 @@ class SMSLIVE24API {
    * @returns {string} returns session ID
    */
   login() {
-    const LOGIN_URL = `
-    'http://www.smslive247.com/http/index.aspx?
-      cmd=login&
-      owneremail=${this.ownerEmail}&
-      subacct=${this.subAcctUserName}&
-      subacctpwd=${this.subAcctPassword}'
-    `;
-    http.get(LOGIN_URL, (res) => {
-      let rawData = '';
-      res.on('data', (chunk) => { rawData += chunk; });
-      res.on('end', () => {
-        try {
-          this.sessionId = rawData.split(" ")[1]
-        } catch (e) {
-          console.error(e.message);
-        }
-      });
-    }).on('error', (e) => {
-      console.error(`Got error: ${e.message}`);
-    });
+    const LOGIN_URL = `http://www.smslive247.com/http/index.aspx?cmd=login&owneremail=${this.ownerEmail}&subacct=${this.subAcctUserName}&subacctpwd=${this.subAcctPassword}`;
+    return accessSMSLive247(LOGIN_URL, 'LOGIN');
   }
 
   /**
@@ -58,94 +38,70 @@ class SMSLIVE24API {
    * Note: You can send sms to multiple numbers, separate each number by comma
    * e.g 08166******,081******,090******
    * Sending sms will only be successful if you have sms credit in your smsLive24 subAccount
+   * @param {string} sessionId - user session Id
    * @param {*} message - message to send
    * @param {*} sendTo - recipient phone number(s)
    * @param {*} sender - sender's name
    */
-  sendMessage(message, sendTo, sender) {
-    const SEND_MESSAGE_URL = `
-      http://www.smslive247.com/http/index.aspx?
-        cmd=sendmsg&
-        sessionid=${this.sessionId}&
-        message=${message}&
-        sender=${sender}&
-        sendto=${sendTo}&
-        msgtype=0
-    `;
-    http.get(SEND_MESSAGE_URL, (res) => {
-      let rawData = '';
-      res.on('data', (chunk) => { rawData += chunk; });
-      res.on('end', () => {
-        try {
-          const trackingId = rawData.split(" ")[1]
-          return {
-            status: 200,
-            message: 'Your message was sent successfully',
-            trackingId
-          }
-        } catch (e) {
-          console.error(e.message);
-          return {
-            status: 400,
-            message: e.message
-          }
-        }
-      });
-    }).on('error', (e) => {
-      console.error(`Got error: ${e.message}`);
-      return {
-        status: 500,
-        message: e.message
-      }
-    });
+  sendMessage(sessionId, message, sendTo, sender) {
+    const SEND_MESSAGE_URL = `http://www.smslive247.com/http/index.aspx?cmd=sendmsg&sessionid=${sessionId}&message=${message}&sender=${sender}&sendto=${sendTo}&msgtype=0`;
+    return accessSMSLive247(SEND_MESSAGE_URL)
   }
   /**
    * Send Quick Message - send quick message
    * This is similar to sendMessage method except that it requires account credentials
    * Unlike sendMessage method that makes use of user's session Id
-   * @param {*} message - message to send
-   * @param {*} sendTo - recipient number(s)
-   * @param {*} sender - sender name
+   * @param {string} message - message to send
+   * @param {string} sendTo - recipient number(s)
+   * @param {string} sender - sender name
    */
   sendQuickMessage(message, sendTo, sender) {
-    const SEND_QUICK_MESSAGE_URL = `
-      http://www.smslive247.com/http/index.aspx?
-        cmd=sendquickmsg&
-        owneremail=${this.ownerEmail}&
-        subacct=${this.subAcctUserName}&
-        subacctpwd=${this.subAcctPassword}'
-        message=${message}&
-        sender=${sender}&
-        sendto=${sendTo}&
-        msgtype=0
-    `;
-    http.get(SEND_MESSAGE_URL, (res) => {
+    const SEND_QUICK_MESSAGE_URL = `http://www.smslive247.com/http/index.aspx?cmd=sendquickmsg&owneremail=${this.ownerEmail}&subacct=${this.subAcctUserName}&subacctpwd=${this.subAcctPassword}&message=${message}&sender=${sender}&sendto=${sendTo}&msgtype=0`;
+    return accessSMSLive247(SEND_QUICK_MESSAGE_URL)
+  }
+}
+
+/**
+ * Access SMSLIVE247 api
+ * @param {string} API_URL - API URL
+ * @returns {object} - return a promise
+ */
+const accessSMSLive247 = (API_URL, TYPE='') => {
+  return new Promise((resolve, reject) => {
+    http.get(API_URL, (res) => {
       let rawData = '';
       res.on('data', (chunk) => { rawData += chunk; });
       res.on('end', () => {
         try {
-          const trackingId = rawData.split(" ")[1]
-          return {
-            status: 200,
-            message: 'Your message was sent successfully',
-            trackingId
+          const status = rawData.split(" ")[0].split(":")[0];
+          if(status != 'OK') {
+            reject({
+              data: rawData
+            });
+          }
+          if(TYPE==='LOGIN') {
+            const sessionId = rawData.split(" ")[1]
+            resolve({
+              sessionId,
+              data: rawData
+            })
+          } else {
+            resolve({
+              data: rawData
+            });
           }
         } catch (e) {
-          console.error(e.message);
-          return {
-            status: 400,
-            message: e.message
-          }
+          reject({
+            data: e.message
+          });
         }
       });
     }).on('error', (e) => {
-      console.error(`Got error: ${e.message}`);
       return {
-        status: 500,
-        message: e.message
+        data: e.message
       }
     });
-  }
+  });
 }
 
-export default SMSLIVE24API
+module.exports = SMSLIVE247API
