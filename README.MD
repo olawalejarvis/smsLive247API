@@ -41,7 +41,7 @@ const SMSLiveAPI = new SMSLive24API('accountEmail@mail.com', 'subAccountUserName
 
 SMSLiveAPI.login().then((res) => {
   const sessionId = res.sessionId
-  SMS.sendMessage(sessionId, 'TEST MEssage from class', '09054420034', 'TEST').then((res) => {
+  SMS.sendMessage(sessionId, 'TEST MEssage from class', '09****', 'TEST').then((res) => {
     console.log(res)
   })
 })
