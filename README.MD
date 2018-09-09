@@ -11,13 +11,13 @@ Read more [here](http://portal.smslive247.com/developer_api/http.aspx)
 
 ## Install
 ```shell
-$ npm install smsLive247API --save
+$ npm install smslive247api --save
 ```
 
 ## Usage Example Using sendMsgQuick cmd
 Using sendMsgQuick is probably the fastest way to use SMSLive247 API
 ```js
-const SMSLive24API = require('smsLive247API');
+const SMSLive24API = require('smslive247api');
 const SMSLiveAPI = new SMSLive24API('accountEmail@mail.com', 'subAccountUserName', 'subAccountPassword');
 
 SMSLiveAPI.sendQuickMessage('SMS Body text', '09***', 'SenderName').then((res) => {
@@ -36,7 +36,7 @@ SMSLiveAPI.sendQuickMessage('SMS Body text', '09***', 'SenderName').then((res) =
 This command requires a user sessionId gotten after login. It is advisable to use this if you're planning to send SMS multiple times.
 
 ```js
-const SMSLive24API = require('smsLive247API');
+const SMSLive24API = require('smslive247api');
 const SMSLiveAPI = new SMSLive24API('accountEmail@mail.com', 'subAccountUserName', 'subAccountPassword');
 
 SMSLiveAPI.login().then((res) => {
