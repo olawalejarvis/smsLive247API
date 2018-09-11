@@ -1,6 +1,6 @@
 {
   "name": "smslive247api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A node interface for SMSLive247 from www.smslive247.com",
   "main": "index.js",
   "scripts": {

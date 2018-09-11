@@ -9,6 +9,8 @@
  */
 
 const http = require('http');
+const { baseUrl } = require('./constants');
+
 class SMSLIVE247API {
   /**
    * Contructor - this takes in the user's sub account username and password
@@ -29,7 +31,7 @@ class SMSLIVE247API {
    * @returns {string} returns session ID
    */
   login() {
-    const LOGIN_URL = `http://www.smslive247.com/http/index.aspx?cmd=login&owneremail=${this.ownerEmail}&subacct=${this.subAcctUserName}&subacctpwd=${this.subAcctPassword}`;
+    const LOGIN_URL = `${baseUrl}?cmd=login&owneremail=${this.ownerEmail}&subacct=${this.subAcctUserName}&subacctpwd=${this.subAcctPassword}`;
     return accessSMSLive247(LOGIN_URL, 'LOGIN');
   }
 
@@ -39,12 +41,13 @@ class SMSLIVE247API {
    * e.g 08166******,081******,090******
    * Sending sms will only be successful if you have sms credit in your smsLive24 subAccount
    * @param {string} sessionId - user session Id
-   * @param {*} message - message to send
-   * @param {*} sendTo - recipient phone number(s)
-   * @param {*} sender - sender's name
+   * @param {string} message - message to send
+   * @param {Array} sendTo - recipient phone number(s) in an array object
+   * @param {string} sender - sender's name
    */
   sendMessage(sessionId, message, sendTo, sender) {
-    const SEND_MESSAGE_URL = `http://www.smslive247.com/http/index.aspx?cmd=sendmsg&sessionid=${sessionId}&message=${message}&sender=${sender}&sendto=${sendTo}&msgtype=0`;
+    const recipient_numbers = sendTo.join(",");
+    const SEND_MESSAGE_URL = `${baseUrl}?cmd=sendmsg&sessionid=${sessionId}&message=${message}&sender=${sender}&sendto=${recipient_numbers}&msgtype=0`;
     return accessSMSLive247(SEND_MESSAGE_URL)
   }
   /**
@@ -52,11 +55,12 @@ class SMSLIVE247API {
    * This is similar to sendMessage method except that it requires account credentials
    * Unlike sendMessage method that makes use of user's session Id
    * @param {string} message - message to send
-   * @param {string} sendTo - recipient number(s)
+   * @param {Array} sendTo - recipient number(s) in an array object
    * @param {string} sender - sender name
    */
   sendQuickMessage(message, sendTo, sender) {
-    const SEND_QUICK_MESSAGE_URL = `http://www.smslive247.com/http/index.aspx?cmd=sendquickmsg&owneremail=${this.ownerEmail}&subacct=${this.subAcctUserName}&subacctpwd=${this.subAcctPassword}&message=${message}&sender=${sender}&sendto=${sendTo}&msgtype=0`;
+    const recipient_numbers = sendTo.join(",");
+    const SEND_QUICK_MESSAGE_URL = `${baseUrl}?cmd=sendquickmsg&owneremail=${this.ownerEmail}&subacct=${this.subAcctUserName}&subacctpwd=${this.subAcctPassword}&message=${message}&sender=${sender}&sendto=${recipient_numbers}&msgtype=0`;
     return accessSMSLive247(SEND_QUICK_MESSAGE_URL)
   }
 }
